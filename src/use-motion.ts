@@ -12,8 +12,10 @@ const useMotion = (
 ) => {
   const [value, setValue] = useState(initialValue)
 
+  const getPrecision = (v: number) => Math.abs(v * 1e-5)
+
   const set = (targetValue: number) => {
-    const critical = 0.02
+    const precision = getPrecision(targetValue - value)
 
     let currentValue = value
     let currentTime = performance.now()
@@ -22,15 +24,17 @@ const useMotion = (
     let raf: number
 
     const loop = () => {
-      if (Math.abs(targetValue - currentValue) > critical) {
-        const t = performance.now()
-        const dt = (t - currentTime) / 1000
-        currentTime = t
+      const distance = targetValue - currentValue
 
-        const elasticForce = (targetValue - currentValue) * stiffness
-        const friction = damping * velocity
+      if (Math.abs(distance) > precision) {
+        const pt = currentTime
+        currentTime = performance.now()
+        const dt = (currentTime - pt) / 1000
 
-        velocity += (dt * (elasticForce - friction)) / mass
+        const fSpring = distance * stiffness
+        const fDamper = damping * velocity
+
+        velocity += (dt * (fSpring - fDamper)) / mass
         currentValue += velocity * dt
         raf = requestAnimationFrame(loop)
       } else {
