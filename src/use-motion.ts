@@ -1,9 +1,9 @@
 import { useState } from 'react'
-import { Spring, SpringConfig } from './spring'
+import { Motion, MotionConfig } from './motion'
 
-const useMotion = (from: number, config: SpringConfig = {}) => {
+const useMotion = (from: number, config: MotionConfig = {}) => {
   const [value, setValue] = useState(from)
-  const [spring] = useState(new Spring(from, setValue, config))
+  const [spring] = useState(new Motion(from, setValue, config))
 
   const startMotion = (to: number) => spring.start(to)
 

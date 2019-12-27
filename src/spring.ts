@@ -9,26 +9,22 @@ const DEFAULT_CONFIG = { tension: 170, friction: 26, mass: 1, precision: 0.01 }
 
 class Spring {
   private config = DEFAULT_CONFIG
-  private position = 0
-  private velocity = 0
-  private to = 0
-  private time = 0
-  private active = false
-  private cb: (position: number) => void
+  private velocity: number
+  private to: number
 
-  constructor(from: number, cb: (position: number) => void, config: SpringConfig = {}) {
+  public position: number
+
+  constructor(from: number, config: SpringConfig) {
     this.position = from
-    this.cb = cb
-    this.config = { ...this.config, ...config }
+    this.velocity = 0
+    this.config = { ...DEFAULT_CONFIG, ...config }
   }
 
-  private update() {
-    if (!this.active) return
+  setTo(to: number) {
+    this.to = to
+  }
 
-    const pt = this.time
-    this.time = performance.now()
-    const dt = (this.time - pt) / 1000
-
+  move(dt: number): boolean {
     const { tension, friction, mass, precision } = this.config
 
     const force = tension * (this.to - this.position)
@@ -40,26 +36,10 @@ class Spring {
     if (Math.abs(this.to - this.position) < precision && Math.abs(this.velocity) < precision) {
       this.position = this.to
       this.velocity = 0
-      this.active = false
-    } else {
-      requestAnimationFrame(() => this.update())
+      return true
     }
 
-    if (this.cb) this.cb(this.position)
-  }
-
-  start(to: number) {
-    this.to = to
-
-    if (!this.active) {
-      this.active = true
-      this.time = performance.now()
-      requestAnimationFrame(() => this.update())
-    }
-  }
-
-  stop() {
-    if (this.active) this.active = false
+    return false
   }
 }
 
