@@ -1,14 +1,14 @@
 import { useState } from 'react'
 import Motion from './motion'
-import { MotionConfig } from './types'
+import { Positions, MotionConfig } from './types'
 
-const useMotion = (from: number, config: MotionConfig = {}) => {
+const useMotion = (from: Positions, config: MotionConfig = {}) => {
   const [value, setValue] = useState(from)
-  const [spring] = useState(new Motion(from, setValue, config))
+  const [motion] = useState(new Motion(from, setValue, config))
 
-  const startMotion = (to: number) => spring.start(to)
+  const startMotion = (to: Positions) => motion.start(to)
 
-  return [value, startMotion] as [number, (to: number) => void]
+  return [value, startMotion] as [Positions, (to: Positions) => void]
 }
 
 export default useMotion

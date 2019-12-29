@@ -1,3 +1,5 @@
+export type Positions = number | number[] | { [prop: string]: number }
+
 export type SpringConfig = {
   tension?: number
   friction?: number

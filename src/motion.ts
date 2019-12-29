@@ -1,14 +1,14 @@
-import Spring from './spring'
-import { MotionConfig } from './types'
+import Springs from './springs'
+import { Positions, MotionConfig } from './types'
 
 class Motion {
-  private spring: Spring
+  private springs: Springs
   private time = 0
   private active = false
-  private cb: (position: number) => void
+  private cb: (position: Positions) => void
 
-  constructor(from: number, cb: (position: number) => void, config: MotionConfig) {
-    this.spring = new Spring(from, config)
+  constructor(from: Positions, cb: (position: Positions) => void, config: MotionConfig) {
+    this.springs = new Springs(from, config)
     this.cb = cb
   }
 
@@ -19,7 +19,7 @@ class Motion {
     this.time = performance.now()
     const dt = (this.time - pt) / 1000
 
-    const over = this.spring.move(dt)
+    const over = this.springs.move(dt)
 
     if (over) {
       this.active = false
@@ -27,11 +27,11 @@ class Motion {
       requestAnimationFrame(() => this.update())
     }
 
-    if (this.cb) this.cb(this.spring.position)
+    if (this.cb) this.cb(this.springs.positions)
   }
 
-  start(to: number) {
-    this.spring.setTo(to)
+  start(to: Positions) {
+    this.springs.setTo(to)
 
     if (!this.active) {
       this.active = true
