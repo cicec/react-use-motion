@@ -1,6 +1,5 @@
-import { Spring, SpringConfig } from './spring'
-
-type MotionConfig = SpringConfig
+import Spring from './spring'
+import { MotionConfig } from './types'
 
 class Motion {
   private spring: Spring
@@ -47,4 +46,3 @@ class Motion {
 }
 
 export default Motion
-export { Motion, MotionConfig }
