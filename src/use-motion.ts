@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Motion, MotionConfig } from './motion'
+import Motion from './motion'
+import { MotionConfig } from './types'
 
 const useMotion = (from: number, config: MotionConfig = {}) => {
   const [value, setValue] = useState(from)

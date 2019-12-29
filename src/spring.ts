@@ -1,9 +1,4 @@
-interface SpringConfig {
-  tension?: number
-  friction?: number
-  mass?: number
-  precision?: number
-}
+import { SpringConfig } from './types'
 
 const DEFAULT_CONFIG = { tension: 170, friction: 26, mass: 1, precision: 0.01 }
 
@@ -44,4 +39,3 @@ class Spring {
 }
 
 export default Spring
-export { Spring, SpringConfig }
