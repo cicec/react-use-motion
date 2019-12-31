@@ -1,4 +1,6 @@
-export type Positions = number | number[] | { [prop: string]: number }
+export type ValuesFor<T> = T | T[] | { [prop: string]: T }
+
+export type Values = ValuesFor<number>
 
 export type SpringConfig = {
   tension?: number
