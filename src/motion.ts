@@ -1,13 +1,13 @@
 import Springs from './springs'
-import { Positions, MotionConfig } from './types'
+import { Values, MotionConfig } from './types'
 
 class Motion {
   private springs: Springs
   private time = 0
   private active = false
-  private cb: (position: Positions) => void
+  private cb: (position: Values) => void
 
-  constructor(from: Positions, cb: (position: Positions) => void, config: MotionConfig) {
+  constructor(from: Values, cb: (values: Values) => void, config: MotionConfig) {
     this.springs = new Springs(from, config)
     this.cb = cb
   }
@@ -30,7 +30,7 @@ class Motion {
     if (this.cb) this.cb(this.springs.positions)
   }
 
-  start(to: Positions) {
+  start(to: Values) {
     this.springs.setTo(to)
 
     if (!this.active) {
