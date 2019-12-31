@@ -1,25 +1,20 @@
 import Spring from './spring'
 import { is } from './helper'
-import { Positions, MotionConfig, SpringConfig } from './types'
+import { MotionConfig, SpringConfig, Values } from './types'
 
-enum Types {
-  Num = 'NUMBER',
-  Arr = 'ARRAY',
-  Obj = 'OBJECT',
-  Dft = 'DEFAULT'
-}
+type Types = 'NUMBER' | 'ARRAY' | 'OBJECT' | ''
 
 class Springs {
   private config: SpringConfig
   private springs: { [prop: string]: Spring } = {}
   private type: Types
 
-  get positions(): Positions {
-    if (this.type === Types.Num) {
+  get positions(): Values {
+    if (this.type === 'NUMBER') {
       return this.springs[0].position
-    } else if (this.type === Types.Arr) {
+    } else if (this.type === 'ARRAY') {
       return Object.keys(this.springs).map(prop => this.springs[prop].position)
-    } else if (this.type === Types.Obj) {
+    } else if (this.type === 'OBJECT') {
       const ret: { [prop: string]: number } = {}
 
       for (const prop in this.springs) {
@@ -32,42 +27,31 @@ class Springs {
     }
   }
 
-  constructor(from: Positions, config: MotionConfig) {
+  constructor(from: Values, config: MotionConfig) {
     this.config = config
 
-    this.type = this.getType(from)
-
-    if (this.type === Types.Num) {
+    if (is.num(from)) {
       this.springs[0] = new Spring(from as number, this.config)
-    } else if (this.type === Types.Arr) {
-      from = from as number[]
-
+      this.type = 'NUMBER'
+    } else if (is.arr(from)) {
       from.map((v, i) => (this.springs[i] = new Spring(v, this.config)))
-    } else if (this.type === Types.Obj) {
+      this.type = 'ARRAY'
+    } else if (is.obj(from)) {
       from = from as { [prop: string]: number }
 
       for (const prop in from) {
         this.springs[prop] = new Spring(from[prop], this.config)
       }
+      this.type = 'OBJECT'
     }
   }
 
-  getType(p: Positions): Types {
-    if (is.num(p)) return Types.Num
-    if (is.arr(p)) return Types.Arr
-    if (is.obj(p)) return Types.Obj
-
-    return Types.Dft
-  }
-
-  setTo(to: Positions) {
-    if (this.type === Types.Num && is.num(to)) {
+  setTo(to: Values) {
+    if (this.type === 'NUMBER' && is.num(to)) {
       this.springs[0].setTo(to as number)
-    } else if (this.type === Types.Arr && is.arr(to)) {
-      to = to as number[]
-
+    } else if (this.type === 'ARRAY' && is.arr(to)) {
       to.map((v, i) => this.springs[i].setTo(v))
-    } else if (this.type === Types.Obj && is.obj(to)) {
+    } else if (this.type === 'OBJECT' && is.obj(to)) {
       for (const prop in to as { [prop: string]: number }) {
         to = to as { [prop: string]: number }
 
