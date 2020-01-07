@@ -10,10 +10,3 @@ export type SpringConfig = {
 }
 
 export type MotionConfig = SpringConfig
-
-export type Rgba = {
-  r: number
-  g: number
-  b: number
-  a: number
-}
