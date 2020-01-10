@@ -1,14 +1,14 @@
-import Springs from './springs'
+import { Action } from './action'
 import { Values, MotionConfig } from './types'
 
-class Motion {
-  private springs: Springs
+class Motion<V extends Values> {
+  private action: Action<V>
   private time = 0
   private active = false
   private cb: (position: Values) => void
 
-  constructor(from: Values, cb: (values: Values) => void, config: MotionConfig) {
-    this.springs = new Springs(from, config)
+  constructor(from: V, cb: (values: Values) => void, config: MotionConfig) {
+    this.action = new Action<V>(from, config)
     this.cb = cb
   }
 
@@ -19,7 +19,7 @@ class Motion {
     this.time = performance.now()
     const dt = (this.time - pt) / 1000
 
-    const over = this.springs.move(dt)
+    const over = this.action.move(dt)
 
     if (over) {
       this.active = false
@@ -27,11 +27,11 @@ class Motion {
       requestAnimationFrame(() => this.update())
     }
 
-    if (this.cb) this.cb(this.springs.positions)
+    if (this.cb) this.cb(this.action.toValues())
   }
 
-  start(to: Values) {
-    this.springs.setTo(to)
+  start(to: V) {
+    this.action.setTo(to)
 
     if (!this.active) {
       this.active = true
