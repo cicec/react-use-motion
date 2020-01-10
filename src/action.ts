@@ -20,7 +20,7 @@ const isObjVal = (v: Values): v is { [key: string]: number | string } => is.obj(
 const isBasSta = (v: State): v is BaseState => v instanceof BaseState
 const isObjSta = (v: State): v is { [key: string]: BaseState } => !isBasSta(v)
 
-class Action<V extends Values> {
+export class Action<V extends Values> {
   private state: State
   private config: SpringConfig
 
@@ -113,5 +113,3 @@ class Action<V extends Values> {
     }
   }
 }
-
-export { Action }

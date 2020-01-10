@@ -2,6 +2,8 @@ export type ValuesFor<T> = T | { [key: string]: T }
 
 export type Values = ValuesFor<number | string>
 
+export type Action<T extends Values> = { values: T, type: 'NUMBER' | 'COLOR' }
+
 export type SpringConfig = {
   tension?: number
   friction?: number
@@ -10,5 +12,3 @@ export type SpringConfig = {
 }
 
 export type MotionConfig = SpringConfig
-
-export type Action<T extends Values> = { values: T, type: 'NUMBER' | 'COLOR' }

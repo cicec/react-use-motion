@@ -1,14 +1,17 @@
 import { useState } from 'react'
-import Motion from './motion'
+import { Motion } from './motion'
+import { Action } from './action'
 import { Values, MotionConfig } from './types'
 
-function useMotion<T extends Values>(from: T, config: MotionConfig = {}): [T, (to: T) => void] {
-  const [value, setValue] = useState(from)
-  const [motion] = useState(new Motion(from, (v: T) => setValue(v), config))
+function useMotion<V extends Values>(from: V, config: MotionConfig = {}): [V, (to: V) => void] {
+  const action = new Action(from, config)
 
-  const startMotion = (to: T) => motion.start(to)
+  const [values, setValues] = useState(from)
+  const [motion] = useState(new Motion(action, (values: V) => setValues(values)))
 
-  return [value, startMotion]
+  const startTo = (to: V) => motion.start(to)
+
+  return [values, startTo]
 }
 
 export default useMotion

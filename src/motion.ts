@@ -1,14 +1,14 @@
 import { Action } from './action'
-import { Values, MotionConfig } from './types'
+import { Values } from './types'
 
-class Motion<V extends Values> {
+export class Motion<V extends Values> {
   private action: Action<V>
   private time = 0
   private active = false
   private cb: (position: Values) => void
 
-  constructor(from: V, cb: (values: Values) => void, config: MotionConfig) {
-    this.action = new Action<V>(from, config)
+  constructor(action: Action<V>, cb: (values: V) => void) {
+    this.action = action
     this.cb = cb
   }
 
@@ -44,5 +44,3 @@ class Motion<V extends Values> {
     if (this.active) this.active = false
   }
 }
-
-export default Motion
