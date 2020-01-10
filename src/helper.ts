@@ -16,5 +16,6 @@ export const is = {
     for (i in a) if (!(i in b)) return false
     for (i in b) if (a[i] !== b[i]) return false
     return is.und(i) ? a === b : true
-  }
+  },
+  numArr: (a: unknown): a is number[] => is.arr(a) && a.every(i => is.num(i))
 }

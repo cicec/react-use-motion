@@ -2,40 +2,45 @@ import { SpringConfig } from './types'
 
 const DEFAULT_CONFIG = { tension: 170, friction: 26, mass: 1, precision: 0.01 }
 
-class Spring {
+export class Spring {
   private config = DEFAULT_CONFIG
-  private velocity: number
-  private to: number
+  private velocities: number[]
+  private to: number[]
 
-  public position: number
+  public positions: number[]
 
-  constructor(from: number, config: SpringConfig) {
-    this.position = from
-    this.velocity = 0
+  constructor(from: number[], config: SpringConfig) {
+    this.positions = from
+    this.velocities = Array(from.length).fill(0)
     this.config = { ...DEFAULT_CONFIG, ...config }
   }
 
-  setTo(to: number) {
+  setTo(to: number[]) {
     this.to = to
   }
 
   move(dt: number): boolean {
     const { tension, friction, mass, precision } = this.config
 
-    const force = tension * (this.to - this.position)
-    const damping = -friction * this.velocity
+    return this.positions
+      .map((position, i) => {
+        const force = tension * (this.to[i] - position)
+        const damping = -friction * this.velocities[i]
 
-    this.velocity += ((force + damping) / mass) * dt
-    this.position += this.velocity * dt
+        this.velocities[i] += ((force + damping) / mass) * dt
+        this.positions[i] += this.velocities[i] * dt
 
-    if (Math.abs(this.to - this.position) < precision && Math.abs(this.velocity) < precision) {
-      this.position = this.to
-      this.velocity = 0
-      return true
-    }
+        if (
+          Math.abs(this.to[i] - this.positions[i]) < precision &&
+          Math.abs(this.velocities[i]) < precision
+        ) {
+          this.positions[i] = this.to[i]
+          this.velocities[i] = 0
+          return true
+        }
 
-    return false
+        return false
+      })
+      .every(i => i)
   }
 }
-
-export default Spring
