@@ -5,18 +5,27 @@ const DEFAULT_CONFIG = { tension: 170, friction: 26, mass: 1, precision: 0.01 }
 export class Spring {
   private config = DEFAULT_CONFIG
   private velocities: number[]
+  private from: number[]
   private to: number[]
 
   public positions: number[]
 
-  constructor(from: number[], config: SpringConfig) {
-    this.positions = from
-    this.velocities = Array(from.length).fill(0)
+  constructor(positions: number[], config: SpringConfig) {
+    this.positions = this.from = positions
+    this.velocities = Array(positions.length).fill(0)
     this.config = { ...DEFAULT_CONFIG, ...config }
   }
 
   setTo(to: number[]) {
     this.to = to
+  }
+
+  reset() {
+    this.positions = this.from
+  }
+
+  stop() {
+    this.positions = this.to
   }
 
   move(dt: number): boolean {

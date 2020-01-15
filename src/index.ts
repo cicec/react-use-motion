@@ -1,1 +1,1 @@
-export { default as useMotion } from './use-motion'
+export { useMotion } from './use-motion'
