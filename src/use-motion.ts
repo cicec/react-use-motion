@@ -15,7 +15,12 @@ export const useMotion = <V extends Values>({
   config = {}
 }: Params<V>): [V, Motion<V>] => {
   const [values, setValues] = useState(from)
-  const motion = useRef(new Motion(new Action(from, to, config), (values: V) => setValues(values)))
+  const [motion] = useState(() => {
+    const action = new Action(from, to, config)
+    const cb = (values: V) => setValues(values)
 
-  return [values, motion.current]
+    return new Motion(action, cb)
+  })
+
+  return [values, motion]
 }

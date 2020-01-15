@@ -56,6 +56,7 @@ export class Motion<V extends Values> {
   replay = () => {
     this.action.reset()
     this.cb(this.action.toValues())
+    this.start()
   }
 
   stop = () => {
