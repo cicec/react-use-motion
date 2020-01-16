@@ -30,9 +30,12 @@ export class Motion<V extends Values> {
     if (this.cb) this.cb(this.action.toValues())
   }
 
-  start(to: V) {
+  to = (to: V, start = true) => {
     this.action.setTo(to)
+    if (start) this.start()
+  }
 
+  start = () => {
     if (!this.active) {
       this.active = true
       this.time = performance.now()
@@ -40,7 +43,25 @@ export class Motion<V extends Values> {
     }
   }
 
-  stop() {
+  pause = () => {
     if (this.active) this.active = false
+  }
+
+  reset = () => {
+    if (this.active) this.active = false
+    this.action.reset()
+    this.cb(this.action.toValues())
+  }
+
+  replay = () => {
+    this.action.reset()
+    this.cb(this.action.toValues())
+    this.start()
+  }
+
+  stop = () => {
+    if (this.active) this.active = false
+    this.action.stop()
+    this.cb(this.action.toValues())
   }
 }

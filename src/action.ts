@@ -24,38 +24,13 @@ export class Action<V extends Values> {
   private state: State
   private config: SpringConfig
 
-  constructor(values: V, config: SpringConfig) {
+  constructor(from: V, to: V, config: SpringConfig) {
     this.config = config
-    this.initState(values)
+    this.initState(from)
+    this.setTo(to)
   }
 
-  public setTo(to: V) {
-    if (isObjSta(this.state) && isObjVal(to)) {
-      for (const key in this.state) {
-        const { data } = this.handleBaseValues(to[key])
-        this.state[key].spring.setTo(data)
-      }
-    } else if (isBasSta(this.state) && (is.num(to) || is.str(to))) {
-      const { data } = this.handleBaseValues(to)
-      this.state.spring.setTo(data)
-    }
-  }
-
-  public move(dt: number) {
-    if (isObjSta(this.state)) {
-      let over = true
-
-      for (const key in this.state) {
-        over = this.state[key].spring.move(dt)
-      }
-
-      return over
-    } else {
-      return this.state.spring.move(dt)
-    }
-  }
-
-  public toValues(): V {
+  toValues(): V {
     if (isBasSta(this.state)) {
       return <V>this.toBaseValues(this.state)
     } else if (isObjSta(this.state)) {
@@ -73,26 +48,26 @@ export class Action<V extends Values> {
 
   private initState(values: V) {
     if (is.num(values) || is.str(values)) {
-      const { type, data } = this.handleBaseValues(values)
-      this.state = new BaseState(type, new Spring(data, this.config))
+      const { type, positions } = this.handleBaseValues(values)
+      this.state = new BaseState(type, new Spring(positions, this.config))
     } else if (isObjVal(values)) {
       this.state = {}
 
       for (const key in values) {
-        const { type, data } = this.handleBaseValues(values[key])
-        this.state[key] = new BaseState(type, new Spring(data, this.config))
+        const { type, positions } = this.handleBaseValues(values[key])
+        this.state[key] = new BaseState(type, new Spring(positions, this.config))
       }
     } else {
       throw new Error('Params type error!')
     }
   }
 
-  private handleBaseValues(values: number | string): { type: BaseTypes; data: number[] } {
-    if (is.num(values)) return { type: 'NUMBER', data: [values] }
+  private handleBaseValues(values: number | string): { type: BaseTypes; positions: number[] } {
+    if (is.num(values)) return { type: 'NUMBER', positions: [values] }
 
     if (is.str(values)) {
       if (isColor(values)) {
-        return { type: 'COLOR', data: stringToRgba(values) }
+        return { type: 'COLOR', positions: stringToRgba(values) }
       } else {
         throw new Error('Unknown string format!')
       }
@@ -111,5 +86,43 @@ export class Action<V extends Values> {
         return rgbaToString(state.spring.positions)
       }
     }
+  }
+
+  private useSpring(fn: (spring: Spring) => void) {
+    if (isObjSta(this.state)) {
+      for (const key in this.state) {
+        fn(this.state[key].spring)
+      }
+    } else {
+      return fn(this.state.spring)
+    }
+  }
+
+  setTo(to: V) {
+    if (isObjSta(this.state) && isObjVal(to)) {
+      for (const key in this.state) {
+        const { positions } = this.handleBaseValues(to[key])
+        this.state[key].spring.setTo(positions)
+      }
+    } else if (isBasSta(this.state) && (is.num(to) || is.str(to))) {
+      const { positions } = this.handleBaseValues(to)
+      this.state.spring.setTo(positions)
+    }
+  }
+
+  move(dt: number) {
+    let over = true
+
+    this.useSpring(spring => (over = spring.move(dt)))
+
+    return over
+  }
+
+  reset() {
+    this.useSpring(spring => spring.reset())
+  }
+
+  stop() {
+    this.useSpring(spring => spring.stop())
   }
 }
