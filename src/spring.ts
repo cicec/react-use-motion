@@ -13,7 +13,7 @@ export class Spring {
   constructor(positions: number[], config: SpringConfig) {
     this.from = [...positions]
     this.positions = [...positions]
-    this.velocities = Array(positions.length).fill(0)
+    this.velocities = [...positions].fill(0)
     this.config = { ...DEFAULT_CONFIG, ...config }
   }
 
@@ -27,6 +27,7 @@ export class Spring {
 
   stop() {
     this.positions = [...this.to]
+    this.velocities = [...this.positions].fill(0)
   }
 
   move(dt: number): boolean {
