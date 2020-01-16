@@ -88,6 +88,16 @@ export class Action<V extends Values> {
     }
   }
 
+  private useSpring(fn: (spring: Spring) => void) {
+    if (isObjSta(this.state)) {
+      for (const key in this.state) {
+        fn(this.state[key].spring)
+      }
+    } else {
+      return fn(this.state.spring)
+    }
+  }
+
   setTo(to: V) {
     if (isObjSta(this.state) && isObjVal(to)) {
       for (const key in this.state) {
@@ -101,36 +111,18 @@ export class Action<V extends Values> {
   }
 
   move(dt: number) {
-    if (isObjSta(this.state)) {
-      let over = true
+    let over = true
 
-      for (const key in this.state) {
-        over = this.state[key].spring.move(dt)
-      }
+    this.useSpring(spring => (over = spring.move(dt)))
 
-      return over
-    } else {
-      return this.state.spring.move(dt)
-    }
+    return over
   }
 
   reset() {
-    if (isObjSta(this.state)) {
-      for (const key in this.state) {
-        this.state[key].spring.reset()
-      }
-    } else if (isBasSta(this.state)) {
-      this.state.spring.reset()
-    }
+    this.useSpring(spring => spring.reset())
   }
 
   stop() {
-    if (isObjSta(this.state)) {
-      for (const key in this.state) {
-        this.state[key].spring.stop()
-      }
-    } else if (isBasSta(this.state)) {
-      this.state.spring.stop()
-    }
+    this.useSpring(spring => spring.stop())
   }
 }
