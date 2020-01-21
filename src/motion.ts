@@ -1,5 +1,5 @@
 import { Action } from './action'
-import { Values } from './types'
+import { Values, MotionConfig } from './types'
 
 export class Motion<V extends Values> {
   private action: Action<V>
@@ -7,8 +7,8 @@ export class Motion<V extends Values> {
   private active = false
   private cb: (position: Values) => void
 
-  constructor(action: Action<V>, cb: (values: V) => void) {
-    this.action = action
+  constructor(from: V, to: V, config: MotionConfig, cb: (values: V) => void) {
+    this.action = new Action(from, to, config)
     this.cb = cb
   }
 
@@ -56,6 +56,11 @@ export class Motion<V extends Values> {
   replay = () => {
     this.action.reset()
     this.cb(this.action.toValues())
+    this.start()
+  }
+
+  reverse = () => {
+    this.action.reverse()
     this.start()
   }
 

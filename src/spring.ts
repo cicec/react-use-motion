@@ -25,6 +25,13 @@ export class Spring {
     this.positions = [...this.from]
   }
 
+  reverse() {
+    const { from, to } = this
+
+    this.from = to
+    this.to = from
+  }
+
   stop() {
     this.positions = [...this.to]
     this.velocities = [...this.positions].fill(0)

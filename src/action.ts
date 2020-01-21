@@ -116,6 +116,10 @@ export class Action<V extends Values> {
     this.springs.map(spring => spring.reset())
   }
 
+  reverse() {
+    this.springs.map(spring => spring.reverse())
+  }
+
   stop() {
     this.springs.map(spring => spring.stop())
   }
