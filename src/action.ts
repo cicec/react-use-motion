@@ -24,26 +24,18 @@ export class Action<V extends Values> {
   private state: State
   private config: SpringConfig
 
+  private get springs() {
+    if (isObjSta(this.state)) {
+      return Object.values(this.state).map(v => v.spring)
+    } else {
+      return [this.state.spring]
+    }
+  }
+
   constructor(from: V, to: V, config: SpringConfig) {
     this.config = config
     this.initState(from)
     this.setTo(to)
-  }
-
-  toValues(): V {
-    if (isBasSta(this.state)) {
-      return <V>this.toBaseValues(this.state)
-    } else if (isObjSta(this.state)) {
-      const ret: { [key: string]: number | string } = {}
-
-      for (const key in this.state) {
-        ret[key] = this.toBaseValues(this.state[key])
-      }
-
-      return <V>ret
-    } else {
-      throw new Error('State type error!')
-    }
   }
 
   private initState(values: V) {
@@ -88,13 +80,19 @@ export class Action<V extends Values> {
     }
   }
 
-  private useSpring(fn: (spring: Spring) => void) {
-    if (isObjSta(this.state)) {
+  toValues(): V {
+    if (isBasSta(this.state)) {
+      return <V>this.toBaseValues(this.state)
+    } else if (isObjSta(this.state)) {
+      const ret: { [key: string]: number | string } = {}
+
       for (const key in this.state) {
-        fn(this.state[key].spring)
+        ret[key] = this.toBaseValues(this.state[key])
       }
+
+      return <V>ret
     } else {
-      return fn(this.state.spring)
+      throw new Error('State type error!')
     }
   }
 
@@ -111,18 +109,14 @@ export class Action<V extends Values> {
   }
 
   move(dt: number) {
-    let over = true
-
-    this.useSpring(spring => (over = spring.move(dt)))
-
-    return over
+    return this.springs.map(spring => spring.move(dt)).every(i => i)
   }
 
   reset() {
-    this.useSpring(spring => spring.reset())
+    this.springs.map(spring => spring.reset())
   }
 
   stop() {
-    this.useSpring(spring => spring.stop())
+    this.springs.map(spring => spring.stop())
   }
 }

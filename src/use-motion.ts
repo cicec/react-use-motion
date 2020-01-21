@@ -5,13 +5,13 @@ import { Values, MotionConfig } from './types'
 
 type Params<V extends Values> = {
   from: V
-  to: V
+  to?: V
   config?: MotionConfig
 }
 
 export const useMotion = <V extends Values>({
   from,
-  to,
+  to = from,
   config = {}
 }: Params<V>): [V, Motion<V>] => {
   const [values, setValues] = useState(from)
